@@ -33,3 +33,10 @@ def page(browser):
     page = browser.new_page()
     yield page
     page.close()
+
+@pytest.fixture(scope="session")
+def browser_type_launch_options():
+    return {
+        "headless": True,
+        "args": ["--no-sandbox", "--disable-dev-shm-usage"]
+    }
