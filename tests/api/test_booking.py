@@ -38,5 +38,6 @@ class TestBookingAPI:
             json=payload
         )
 
+
         assert response.status_code == 200
         assert response.json()["booking"]["firstname"] == "Andrean"
