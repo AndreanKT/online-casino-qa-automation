@@ -1,0 +1,33 @@
+name: Casino QA Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install pytest playwright pytest-playwright requests
+
+      - name: Install browsers
+        run: playwright install --with-deps
+
+      - name: Run API Tests
+        run: pytest tests/api/ -v --tb=short
+
+      - name: Run UI Tests
+        run: pytest tests/ui/ -v --tb=short
