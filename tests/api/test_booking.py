@@ -3,7 +3,6 @@ import requests
 
 BASE_URL = "https://restful-booker.herokuapp.com"
 
-
 class TestBookingAPI:
 
     def test_get_all_bookings(self):
