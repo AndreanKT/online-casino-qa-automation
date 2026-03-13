@@ -2,9 +2,11 @@ name: Casino QA Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
   pull_request:
     branches: [ main ]
+  schedule:
+    - cron: '45 23 * * *'
 
 jobs:
   run-tests:
@@ -31,3 +33,6 @@ jobs:
 
       - name: Run UI Tests
         run: pytest tests/ui/ -v --tb=short --ignore=tests/ui/ || true
+
+      - name: Run UI Tests
+        run: pytest tests/ui/ -v --tb=short
