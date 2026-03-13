@@ -13,8 +13,10 @@ class TestBookingAPI:
         assert len(response.json()) > 0
 
     def test_get_booking_by_id(self):
-        """Вземи конкретна резервация"""
-        response = requests.get(f"{BASE_URL}/booking/1")
+        all_bookings = requests.get(f"{BASE_URL}/booking")
+        booking_id = all_bookings.json()[0]["bookingid"]
+
+        response = requests.get(f"{BASE_URL}/booking/{booking_id}")
 
         assert response.status_code == 200
         assert "firstname" in response.json()
