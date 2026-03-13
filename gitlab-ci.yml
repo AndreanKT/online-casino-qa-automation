@@ -1,0 +1,26 @@
+stages:
+  - test
+
+run-api-tests:
+  stage: test
+  image: python:3.12
+  script:
+    - pip install pytest playwright pytest-playwright requests
+    - playwright install chromium
+    - playwright install-deps chromium
+    - pytest tests/api/ -v --tb=short
+  only:
+    - main
+    - develop
+
+run-ui-tests:
+  stage: test
+  image: python:3.12
+  script:
+    - pip install pytest playwright pytest-playwright requests
+    - playwright install chromium
+    - playwright install-deps chromium
+    - pytest tests/ui/ -v --tb=short
+  only:
+    - main
+    - develop
