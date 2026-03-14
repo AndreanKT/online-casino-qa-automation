@@ -1,43 +1,48 @@
-import pytest
-import requests
+import uuid
 
-BASE_URL = "https://restful-booker.herokuapp.com"
+from utils.auth_api import AuthAPI
 
-class TestAuthentication:
 
-    def test_login_valid_credentials(self):
-        """Логин с валидни данни трябва да върне token"""
-        response = requests.post(
-            f"{BASE_URL}/auth",
-            json={
-                "username": "admin",
-                "password": "password123"
-            }
+class TestAuth:
+
+    def test_login_valid(self, base_url, valid_credentials):
+        auth = AuthAPI(base_url)
+        token = auth.login(
+            valid_credentials["username"],
+            valid_credentials["password"]
         )
-        assert response.status_code == 200
-        assert "token" in response.json()
-        print(f"Token: {response.json()['token']}")
+        assert token is not None
+        assert isinstance(token, str)
 
-    def test_login_invalid_credentials(self):
-        """Логин с грешни данни не трябва да върне token"""
-        response = requests.post(
-            f"{BASE_URL}/auth",
-            json={
-                "username": "wrong",
-                "password": "wrong"
-            }
+    def test_login_invalid(self, base_url, invalid_credentials):
+        auth = AuthAPI(base_url)
+        token = auth.login(
+            invalid_credentials["username"],
+            invalid_credentials["password"]
         )
-        assert response.status_code == 200
-        assert response.json().get("reason") == "Bad credentials"
+        assert token is None
 
-    def test_login_empty_credentials(self):
-        """Логин с празни полета"""
-        response = requests.post(
-            f"{BASE_URL}/auth",
-            json={
-                "username": "",
-                "password": ""
-            }
+    def test_login_empty(self, base_url):
+        auth = AuthAPI(base_url)
+        token = auth.login(" ", " ")
+        assert token is None
+
+    def test_register(self, base_url):
+        auth = AuthAPI(base_url)
+        unique_email = f"test_{ uuid.uuid4()}@abv.bg"
+
+        response = auth.register(
+
+            email=unique_email,
+            password="Kubrat803!",
+            firstname="Andrean",
+            lastname="Test",
+            mobile="1111111111"
         )
-        assert response.status_code == 200
-        assert "token" not in response.json()
+
+        assert response["message"] == "Registered Successfully"
+
+        auth.delete_user(unique_email)
+
+
+
