@@ -21,3 +21,8 @@ def invalid_credentials():
         "username": "wrong",
         "password": "wrong"
     }
+
+@pytest.fixture(scope="session")
+def testing_password():
+    return os.getenv("TEST_PASSWORD")
+

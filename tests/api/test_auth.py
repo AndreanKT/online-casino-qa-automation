@@ -42,7 +42,5 @@ class TestAuth:
 
         assert response["message"] == "Registered Successfully"
 
-        auth.delete_user(unique_email)
-
 
 
