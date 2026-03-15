@@ -5,10 +5,18 @@ run-api-tests:
   stage: test
   image: python:3.12
   script:
-    - pip install pytest playwright pytest-playwright requests
+    - pip install -r requirements.txt
     - playwright install chromium
     - playwright install-deps chromium
     - pytest tests/api/ -v --tb=short
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - reports/report.html
+      - reports/screenshots/
+    reports:
+      junit: reports/junit.xml
   only:
     - main
     - develop
@@ -17,10 +25,19 @@ run-ui-tests:
   stage: test
   image: python:3.12
   script:
-    - pip install pytest playwright pytest-playwright requests
+    - pip install -r requirements.txt
     - playwright install chromium
     - playwright install-deps chromium
     - pytest tests/ui/ -v --tb=short
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - reports/report.html
+      - reports/screenshots/
+      - reports/videos/
+    reports:
+      junit: reports/junit.xml
   only:
     - main
     - develop

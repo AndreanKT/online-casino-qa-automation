@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="3.487" timestamp="2026-03-15T22:25:43.432534+02:00" hostname="Andrean"><testcase classname="tests.ui.test_screenshot_check.TestScreenshotCheck" name="test_failing_on_purpose[chromium]" time="3.448"><failure message="AssertionError: assert 'dashboard' in 'https://rahulshettyacademy.com/client/#/auth/login'&#10; +  where 'https://rahulshettyacademy.com/client/#/auth/login' = &lt;Page url='https://rahulshettyacademy.com/client/#/auth/login'&gt;.url">self = &lt;test_screenshot_check.TestScreenshotCheck object at 0x000001B6FA61EC30&gt;, page = &lt;Page url='https://rahulshettyacademy.com/client/#/auth/login'&gt;
+
+    def test_failing_on_purpose(self, page):
+        from pages.login_page import LoginPage
+        login_page = LoginPage(page)
+    
+        # Умишлено грешен assert!
+&gt;       assert "dashboard" in page.url  # ← ще фейлне!
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert 'dashboard' in 'https://rahulshettyacademy.com/client/#/auth/login'
+E        +  where 'https://rahulshettyacademy.com/client/#/auth/login' = &lt;Page url='https://rahulshettyacademy.com/client/#/auth/login'&gt;.url
+
+tests\ui\test_screenshot_check.py:8: AssertionError</failure></testcase></testsuite></testsuites>
