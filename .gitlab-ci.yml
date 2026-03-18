@@ -12,6 +12,8 @@ run-api-tests:
   artifacts:
     when: always
     expire_in: 1 week
+    reports:
+      junit: reports/junit.xml
     paths:
       - reports/report.html
       - reports/screenshots/
@@ -30,8 +32,9 @@ run-ui-tests:
   artifacts:
     when: always
     expire_in: 1 week
+    reports:
+      junit: reports/junit.xml
     paths:
-      - junit: reports/junit.xml
       - reports/report.html
       - reports/screenshots/
       - reports/videos/
