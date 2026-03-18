@@ -1,35 +1,30 @@
-from utils.base_api import BaseAPI
+from utils.logger import get_logger
+from utils.base_api import BaseAPI              # Кой клас импортираме от кой файл?
 
 
-class AuthAPI(BaseAPI):
+class AuthAPI(BaseAPI):                        # Как се казва класа и кой е parent?
 
-    def __init__(self, base_url):
-        super().__init__(base_url)
-        self.token = None
+    def __init__(self, base_url):                # Конструктора и какво приема?
+        super().__init__(base_url)                   # Как викаме parent конструктора?
 
-    def login(self, username, password ):
-        response = self.post("/api/ecom/auth/login", {
-            "userEmail": username,
-            "userPassword": password
-        })
+    def login(self, username, password):         # Какви параметри приема login?
+        return self.post(               # Кой метод от BaseAPI ползваме?
+            "/api/ecom/auth/login",                     # Кой endpoint?
+            {
+                "userEmail": username,       # Ключ за username в payload?
+                "userPassword": password        # Ключ за password в payload?
+            }
+        )
 
-        if response.status_code != 200:
-            return None
-
-        return response.json().get("token")
-
-    def register(self, email, password, firstname, lastname, mobile):
-        response = self.post("/api/ecom/auth/register", {
-            "userEmail": email,
-            "userPassword": password,
-            "confirmPassword": password,
-            "firstName": firstname,
-            "lastName": lastname,
-            "userMobile": mobile,
-            "userRole": "customer"
-        })
-
-        if response.status_code not in [200, 201]:
-            return None
-        return response.json()
-
+    def register(self, confirmPassword, firstName, lastName, userEmail, userMobile, userPassword ):   # Какви параметри приема?
+        return self.post(               # Кой метод от BaseAPI?
+            "/api/ecom/auth/register",
+            {
+                "confirmPassword": confirmPassword,
+                "firstName": firstName,
+                "lastName": lastName,
+                "userEmail": userEmail,
+                "userMobile":  userMobile,
+                "userPassword": userPassword
+            }
+        )

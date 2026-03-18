@@ -1,6 +1,7 @@
 import pytest
 import os
 from dotenv import load_dotenv
+from utils.auth_api import AuthAPI
 
 load_dotenv()
 
@@ -67,3 +68,7 @@ def page(browser, request):
         )
 
     page.close()
+
+@pytest.fixture
+def auth(base_url):
+    return AuthAPI(base_url)

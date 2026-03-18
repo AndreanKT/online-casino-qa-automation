@@ -1,0 +1,9 @@
+{
+    "new_user": {
+        "firstName": "name",
+        "lastName": "last",
+        "userPassword": "Password123!",
+        "confirmPassword": "Password123!",
+        "userMobile": "1111111111"
+    }
+}

@@ -3,7 +3,7 @@ from pages.base_page import BasePage
 
 class LoginPage(BasePage):
 
-    # Selectors → намери ги с F12!
+    # Selectors
     EMAIL_INPUT = "input[placeholder='email@example.com']"
     PASSWORD_INPUT = "input[placeholder='enter your passsword']"
     SUBMIT_BUTTON = "#login"
