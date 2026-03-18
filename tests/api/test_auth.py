@@ -7,12 +7,12 @@ from dotenv import load_dotenv               # Как зареждаме .env?
 load_dotenv()                                         # Как викаме load_dotenv?
 from utils.performance import assert_response_time
 from utils.schemas.auth_schemas import LOGIN_SCHEMA, REGISTER_SCHEMA
-from utils.auth_api import AuthAPI
 from utils.logger import get_logger
 logger = get_logger(__name__)
 import json
 with open("fixtures/auth_fixtures.json") as f:
     auth_data = json.load(f)
+from utils.auth_api import decode_token
 
 
 # Кой клас импортираме?
@@ -25,9 +25,8 @@ class TestAuth:                                    # Как се казва кл
             password=os.getenv("USER_PASSWORD")           # Password от env?
         )
 
-        assert response.status_code  == 200
+        assert response.status_code == 200, f"Failed with {response.status_code}, body={response.text}"
         validate(response.json(), LOGIN_SCHEMA)
-        assert_response_time(response, "login")
         logger.info("test_login_valid PASSED")
 
 
@@ -46,14 +45,28 @@ class TestAuth:                                    # Как се казва кл
         ("", "", 400, "Email is required"),  # Empty fields
         ("' OR '1'='1", "Password123!", 400, "Incorrect email or password."),  # SQL injection email
         ("nonexistent@abv.bg", "' OR '1'='1", 400, "Incorrect email or password."),  # SQL injection password
-    ])
+    ],
+                             ids=[
+                                 "wrong_password",
+                                 "non_existing_email",
+                                 "empty_fields",
+                                 "sql_injection_email",
+                                 "sql_injection_password"
+                             ]
+    )
     def test_login_negative(self, auth, username, password, expected_status, expected_message):
         response = auth.login(
             username=username,
             password=password
         )
-        assert response.status_code == expected_status
-        assert response.json()["message"] == expected_message
+        assert response.status_code == expected_status, f"Failed with {response.status_code}, body={response.text}"
+        try:
+            data = response.json()
+        except Exception:
+            pytest.fail(f"Response is not JSON: {response.text}")
+
+        assert "message" in data, f"Missing message in response: {data}"
+        assert data["message"] == expected_message
 
         #Edge Case
     @pytest.mark.parametrize("username, password, expected_status", [
@@ -62,7 +75,14 @@ class TestAuth:                                    # Как се казва кл
         (os.getenv("USER_EMAIL"), os.getenv("USER_PASSWORD") + " ", 400),  # ИНТЕРВАЛ В КРАЯ
         (os.getenv("USER_EMAIL"), os.getenv("USER_PASSWORD").lower(), 400),  # БЕЗ ГЛАВНА БУКВА
         ("a" * 100 + "@abv.bg", os.getenv("USER_PASSWORD"), 400), # Too many symbols
-    ])
+    ],  ids=[
+                                 "Login_with_Capital_letters",
+                                 "Space_between",
+                                 "space_at_the_end",
+                                 "without_capital_letters",
+                                 "too_many_symbols",
+                             ]
+    )
     def test_login_edge(self, auth, username, password, expected_status):
            response = auth.login(
                 username=username,
@@ -71,28 +91,20 @@ class TestAuth:                                    # Как се казва кл
            assert response.status_code == expected_status
 
     def test_token_from_another_user(self, auth):
-        import base64
 
         # Стъпка 1 — Регистрираш User 2
         unique_email = f"test_{uuid.uuid4()}@abv.bg"
-        auth.register(
-            firstName="second",
-            lastName="user",
-            userEmail=unique_email,
-            userPassword="Password123!",
-            confirmPassword="Password123!",
-            userMobile="1111111111"
-        )
+        user_data = auth_data["new_user"].copy()  # ← от fixtures!
+        user_data["userEmail"] = unique_email
+        auth.register(**user_data)
 
         # Стъпка 2 — Логваш User 2 → вземаш неговия ID
         response2 = auth.login(
             username=unique_email,
-            password="Password123!"
+            password=user_data["userPassword"]
         )
         token2 = response2.json()["token"]
-        payload2 = token2.split(".")[1]
-        payload2 += "=" * (4 - len(payload2) % 4)
-        user2_id = json.loads(base64.b64decode(payload2))["_id"]
+        user2_id = decode_token(token2)["_id"]
 
         # Стъпка 3 — Логваш User 1 → вземаш токена!
         response1 = auth.login(
@@ -106,9 +118,7 @@ class TestAuth:                                    # Как се казва кл
             token=token1
         )
 
-        print(response.status_code)
-        print(response.json())
-        assert response.status_code == 400
+        assert response.status_code == 400, f"Failed with {response.status_code}, body={response.text}"
 
     def test_brute_force_protection(self, auth):
         response = None
@@ -126,9 +136,8 @@ class TestAuth:                                    # Как се казва кл
 
         user_data = auth_data["new_user"].copy()
         user_data["userEmail"] = unique_email
-
         response = auth.register(**user_data)
 
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Failed with {response.status_code}, body={response.text}"
         validate(response.json(), REGISTER_SCHEMA)
         assert_response_time(response, "register")

@@ -1,6 +1,14 @@
-from utils.logger import get_logger
-from utils.base_api import BaseAPI              # Кой клас импортираме от кой файл?
+from utils.base_api import BaseAPI
+import base64
+import json
 
+
+# Кой клас импортираме от кой файл?
+
+def decode_token(token):
+    payload = token.split(".")[1]
+    payload += "=" * (4 - len(payload) % 4)  # padding
+    return json.loads(base64.b64decode(payload))
 
 class AuthAPI(BaseAPI):                        # Как се казва класа и кой е parent?
 
@@ -28,3 +36,4 @@ class AuthAPI(BaseAPI):                        # Как се казва клас
                 "userPassword": userPassword
             }
         )
+

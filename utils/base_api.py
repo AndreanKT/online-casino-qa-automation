@@ -13,34 +13,52 @@ class BaseAPI:                                    # Как се казва кл�
 
     def post(self, endpoint, payload):
         self.logger.info(f"POST {endpoint} | payload: {payload}")# Какви параметри приема post?
-        return self.session.post(                  # session + HTTP метод?
+        response = self.session.post(                  # session + HTTP метод?
             url=f"{self.base_url}{endpoint}",           # Как строим URL?
-            json=payload                       # Как подаваме JSON?
+            json=payload,
+            timeout=10
         )
+        self.logger.info(f"Response: {response.status_code}")  # ← после логваш
+        return response
 
     def get(self, endpoint):
         self.logger.info(f"GET {endpoint}")# Какъв параметър приема get?
-        return self.session.get(                  # session + HTTP метод?
-            url=f"{self.base_url}{endpoint}"            # Как строим URL?
+        response = self.session.get(                  # session + HTTP метод?
+            url=f"{self.base_url}{endpoint}",
+            timeout=10
         )
+        self.logger.info(f"Response: {response.status_code}")  # ← после логваш
+        return response
 
     def delete(self, endpoint, token):
         self.logger.info(f"DELETE {endpoint} | token: {token}")# Какви параметри приема delete?
-        return self.session.delete(                  # session + HTTP метод?
+        response = self.session.delete(                  # session + HTTP метод?
             url=f"{self.base_url}{endpoint}",           # Как строим URL?
-            headers={"Cookie": f"token={token}"}   # Какъв header за token?
+            headers={"Cookie": f"token={token}"},   # Какъв header за token?
+            timeout=10
         )
+        self.logger.info(f"Response: {response.status_code}")  # ← после логваш
+        return response
 
     def put(self, endpoint, payload, token):
         self.logger.info(f"PUT {endpoint}| payload: {payload} | token: {token}")# Какви параметри приема put?
-        return self.session.put(                  # session + HTTP метод?
+        response = self.session.put(                  # session + HTTP метод?
             url=f"{self.base_url}{endpoint}",           # Как строим URL?
             json=payload,                      # Как подаваме JSON?
-            headers={"Cookie": f"token={token}"}     # Какъв header за token?
+            headers={"Cookie": f"token={token}"},     # Какъв header за token?
+            timeout=10
         )
+        self.logger.info(f"Response: {response.status_code}")  # ← после логваш
+        return response
+
     def get_with_token(self, endpoint, token):
         self.logger.info(f"get_with_token {endpoint} | token: {token}")# ← нов метод!
-        return self.session.get(
+        response = self.session.get(
             url=f"{self.base_url}{endpoint}",
-            headers={"Authorization": token}
+            headers={"Authorization": token},
+            timeout=10
         )
+        self.logger.info(f"Response: {response.status_code}")  # ← после логваш
+        return response
+
+
