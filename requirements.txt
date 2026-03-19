@@ -7,3 +7,4 @@ python-dotenv
 pytest-html
 jsonschema
 pytest-rerunfailures
+pytest-metadata
