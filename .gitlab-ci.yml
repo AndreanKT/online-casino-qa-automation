@@ -26,6 +26,9 @@ run-api-tests:
     paths:
       - reports/report.html
       - reports/screenshots/
+  only:
+    - main
+    - develop
 
 run-ui-tests:
   stage: test
@@ -42,8 +45,6 @@ run-ui-tests:
       - reports/report.html
       - reports/screenshots/
       - reports/videos/
-
-only:
-  - main
-  - develop
-```
+  only:
+    - main
+    - develop
